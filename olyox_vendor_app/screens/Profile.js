@@ -2,8 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../constants/colors';
+import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
+    const navigation = useNavigation();
     // Sample data
     const profileData = {
         name: "Sharma's Kitchen",
@@ -79,28 +81,28 @@ const Profile = () => {
                     <Text style={styles.referralCode}>Referral Code: {profileData.referralCode}</Text>
                 </View>
                 <TouchableOpacity style={styles.rechargeButton}>
-                    <Text style={styles.rechargeButtonText}>Recharge Now</Text>
+                    <Text onPress={()=>navigation.navigate('Recharge Plan')} style={styles.rechargeButtonText}>Recharge Now</Text>
                 </TouchableOpacity>
             </View>
 
             {/* Menu Items */}
             <View style={styles.menuContainer}>
                 <Text style={styles.menuHeader}>Business</Text>
-                <MenuItem icon="food"  title="Add Listing" />
-                <MenuItem icon="food-variant" title="Customize Tiffin Plan" />
-                <MenuItem icon="chart-bar" title="Order Report" />
+                <MenuItem icon="food"  title="Add Listing" onPress={()=> navigation.navigate('Add Listing')} />
+                <MenuItem icon="food-variant" title="Customize Tiffin Plan" onPress={()=>navigation.navigate('Customize Tiffine Plan')} />
+                <MenuItem icon="chart-bar" title="Order Report" onPress={()=>navigation.navigate('Order Report')} />
                 <MenuItem icon="account-multiple" title="Other Vendor IDs" />
 
                 <Text style={styles.menuHeader}>Earnings & History</Text>
                 <MenuItem icon="wallet" title="Sales Earnings" value={`₹${profileData.salesEarnings}`} />
-                <MenuItem icon="history" title="Recharge History" />
-                <MenuItem icon="cash-multiple" title="Withdraw History" />
-                <MenuItem icon="account-group" title="Referral History" />
+                <MenuItem icon="history" title="Recharge History" onPress={()=>navigation.navigate('Recharge History')} />
+                <MenuItem icon="cash-multiple" title="Withdraw History" onPress={()=>navigation.navigate('Withdraw History')} />
+                <MenuItem icon="account-group" title="Referral History" onPress={()=>navigation.navigate('Referral History')} />
 
                 <Text style={styles.menuHeader}>Account Settings</Text>
                 <MenuItem icon="account-edit" title="Update Profile" />
-                <MenuItem icon="lock-reset" title="Change Password" />
-                <MenuItem icon="headphones" title="Support" />
+                <MenuItem icon="lock-reset" title="Change Password" onPress={()=>navigation.navigate('Change Password')} />
+                <MenuItem icon="headphones" title="Support" onPress={()=>navigation.navigate('Support')} />
                 <MenuItem icon="logout" title="Logout" />
             </View>
         </ScrollView>
