@@ -30,7 +30,7 @@ const Header = () => {
     const menuItems = [
         { title: 'Home', icon: 'home' },
         { title: 'Profile', icon: 'account' },
-        { title: 'Orders', icon: 'shopping' },
+        { title: 'All Order', icon: 'shopping' },
         { title: 'Addresses', icon: 'map-marker' },
         { title: 'Settings', icon: 'cog' },
         { title: 'Help', icon: 'help-circle' },
@@ -97,7 +97,7 @@ const Header = () => {
                         </View>
 
                         <View style={styles.authButtons}>
-                            <TouchableOpacity style={styles.loginButton}>
+                            <TouchableOpacity onPress={()=>navigation.navigate('Login')} style={styles.loginButton}>
                                 <Text style={styles.loginButtonText}>Login</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.registerButton}>
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f0f0f0',
     },
     loginButton: {
-        backgroundColor: '#2563eb',
+        backgroundColor: '#FF6B6B',
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 8,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 8,
         borderWidth: 1,
-        borderColor: '#2563eb',
+        borderColor: '#FF6B6B',
     },
     loginButtonText: {
         color: '#ffffff',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     registerButtonText: {
-        color: '#2563eb',
+        color: '#FF6B6B',
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 16,

@@ -19,12 +19,51 @@ import { Withdraw } from './screens/Withdraw';
 import { ChangePassword } from './screens/ChangePassoword';
 import ReferralHistory from './screens/ReferralHistory';
 import { Support } from './screens/Support';
+import { ProfileUpdate } from './screens/ProfileUpdate';
+import Help from './screens/Help';
+import AllOrders from './screens/AllOrders';
+import { Login } from './screens/Login';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  return (
-    <Provider store={store}>
+  const role = 'Hotel'
+  if(role === 'tiffin'){
+    return (
+      <Provider store={store}>
+        <PaperProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+              <NavigationContainer>
+                <Stack.Navigator>
+                  <Stack.Screen name="Home" options={{ headerShown: false }} component={HomeScreen} />
+                  <Stack.Screen name="Profile" options={{ headerShown: true }} component={Profile} />
+                  <Stack.Screen name="New Order" options={{ headerShown: true }} text={'New Order'} component={NewOrder} />
+                  <Stack.Screen name="Add Listing" options={{ headerShown: true }} text={'Add Listing'} component={AddListing} />
+                  <Stack.Screen name="Customize Tiffine Plan" options={{ headerShown: true }} text={'Add Customize Tiffin Plan'} component={CustomizeTiffinPlan} />
+                  <Stack.Screen name="Order Report" options={{ headerShown: true }} text={'Order Report'} component={OrderReport} />
+                  <Stack.Screen name="Recharge Plan" options={{ headerShown: true }} text={'Recharge Plan'} component={Recharge} />
+                  <Stack.Screen name="Recharge History" options={{ headerShown: true }} text={'Recharge History'} component={RechargeHistory} />
+                  <Stack.Screen name="Withdraw History" options={{ headerShown: true }} text={'Withdraw History'} component={Withdraw} />
+                  <Stack.Screen name="Change Password" options={{ headerShown: true }} text={'Change Password'} component={ChangePassword} />
+                  <Stack.Screen name="Referral History" options={{ headerShown: true }} text={'Referral History'} component={ReferralHistory} />
+                  <Stack.Screen name="Support" options={{ headerShown: true }} text={'Support'} component={Support} />
+                  <Stack.Screen name="Profile Update" options={{ headerShown: true }} text={'Profile Update'} component={ProfileUpdate} />
+                  <Stack.Screen name="Help" options={{ headerShown: true }} text={'Help'} component={Help} />
+                  <Stack.Screen name="All Order" options={{ headerShown: true }} text={'All Order'} component={AllOrders} />
+  
+                </Stack.Navigator>
+              </NavigationContainer>
+            </SafeAreaProvider>
+          </GestureHandlerRootView>
+        </PaperProvider>
+      </Provider>
+    );
+  }
+
+  if(role === 'Hotel'){
+    return (
+      <Provider store={store}>
       <PaperProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
@@ -42,6 +81,10 @@ export default function App() {
                 <Stack.Screen name="Change Password" options={{ headerShown: true }} text={'Change Password'} component={ChangePassword} />
                 <Stack.Screen name="Referral History" options={{ headerShown: true }} text={'Referral History'} component={ReferralHistory} />
                 <Stack.Screen name="Support" options={{ headerShown: true }} text={'Support'} component={Support} />
+                <Stack.Screen name="Profile Update" options={{ headerShown: true }} text={'Profile Update'} component={ProfileUpdate} />
+                <Stack.Screen name="Help" options={{ headerShown: true }} text={'Help'} component={Help} />
+                <Stack.Screen name="All Order" options={{ headerShown: true }} text={'All Order'} component={AllOrders} />
+                <Stack.Screen name="Login" options={{ headerShown: true }} text={'Login'} component={Login} />
 
               </Stack.Navigator>
             </NavigationContainer>
@@ -49,6 +92,8 @@ export default function App() {
         </GestureHandlerRootView>
       </PaperProvider>
     </Provider>
-  );
+    )
+  }
+  
 }
 

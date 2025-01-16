@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5F5F5',
     },
     periodButtonActive: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#FF6B6B',
     },
     periodButtonText: {
         color: '#666',

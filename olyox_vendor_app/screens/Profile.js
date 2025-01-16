@@ -100,7 +100,7 @@ const Profile = () => {
                 <MenuItem icon="account-group" title="Referral History" onPress={()=>navigation.navigate('Referral History')} />
 
                 <Text style={styles.menuHeader}>Account Settings</Text>
-                <MenuItem icon="account-edit" title="Update Profile" />
+                <MenuItem icon="account-edit" title="Update Profile" onPress={()=>navigation.navigate('Profile Update')} />
                 <MenuItem icon="lock-reset" title="Change Password" onPress={()=>navigation.navigate('Change Password')} />
                 <MenuItem icon="headphones" title="Support" onPress={()=>navigation.navigate('Support')} />
                 <MenuItem icon="logout" title="Logout" />
