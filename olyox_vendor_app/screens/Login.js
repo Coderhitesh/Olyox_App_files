@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../constants/colors';
 
@@ -17,7 +18,7 @@ export function Login({ navigation }) {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8111/api/tiffin/login', {
+            const response = await fetch('http://192.168.1.8:8111/api/tiffin/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,10 +28,16 @@ export function Login({ navigation }) {
 
             const data = await response.json();
 
+            console.log("data", data)
+
             if (data.success) {
-                // Handle successful login
-                Alert.alert('Success', 'Login successful!');
-                // Navigate to main screen or handle token storage
+                const token = data?.token;
+
+                // Store token in AsyncStorage
+                await AsyncStorage.setItem('userToken', token);
+
+                // Navigate to the home screen
+                navigation.replace('Home');
             } else {
                 Alert.alert('Error', data.message || 'Login failed');
                 console.log(data)

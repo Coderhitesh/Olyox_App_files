@@ -1,23 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, FlatList, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
 
 export function ProfileUpdate() {
+    const [vendorId, setVendorId] = useState(null)
+    const [photo, setPhoto] = React.useState(null);
     const [formData, setFormData] = useState({
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        category: 'North Indian',
+        name: '',
+        email: '',
+        category: '',
         address: {
-            area: 'Green Park',
+            area: '',
             street_address: '',
-            landmark: 'Near City Mall',
-            pincode: '110001',
+            landmark: '',
+            pincode: '',
             location: {
                 type: 'Point',
                 coordinates: [0, 0]
             }
         }
     });
+
+    const fetchUserDetails = async () => {
+        try {
+            // Retrieve the token from AsyncStorage
+            const token = await AsyncStorage.getItem('userToken');
+
+            if (!token) {
+                console.log('No token found');
+                alert('You need to log in to access this feature.');
+                return;
+            }
+
+            // Make the API request
+            const response = await axios.get('http://192.168.1.8:8111/api/tiffin/find_vendor', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // const data = await response.json();
+            const data = response.data;
+            const vendor = data?.data
+            setVendorId(vendor?._id)
+            setFormData({
+                name: vendor.name,
+                email: vendor.email,
+                category: vendor.category.title,
+                address: {
+                    area: vendor.address.area,
+                    street_address: vendor.address.street_address,
+                    landmark: vendor.address.landmark,
+                    pincode: vendor.address.pincode,
+                    location: {
+                        type: 'Point',
+                        coordinates: [vendor.address.location.coordinates[0], vendor.address.location.coordinates[1]]
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while fetching user details. Please try again.');
+        }
+    };
+
+    useEffect(() => {
+        fetchUserDetails();
+    }, []);
+
 
     const [images, setImages] = useState({
         FSSAIImage: null,
@@ -32,12 +87,9 @@ export function ProfileUpdate() {
 
     const fetchAddressSuggestions = async (query) => {
         try {
-            const response = await fetch(
-                `https://www.api.blueaceindia.com/api/v1/autocomplete?input=${encodeURIComponent(query)}`
-            );
-            const data = await response.json();
-            console.log("data",data)
-            setAddressSuggestions(data || []);
+            const response = await axios.get(`https://www.api.blueaceindia.com/api/v1/autocomplete?input=${encodeURIComponent(query)}`);
+            // const data = await response.json();
+            setAddressSuggestions(response.data || []);
         } catch (error) {
             console.error('Error fetching suggestions:', error);
             Alert.alert('Error', 'Failed to fetch address suggestions');
@@ -90,20 +142,44 @@ export function ProfileUpdate() {
                 } else {
                     setAddressSuggestions([]);
                 }
-            }, 500)
+            }, 200)
         );
     };
 
-    const handleImageUpload = (type) => {
-        // In a real app, implement image picker functionality here
-        Alert.alert('Upload Image', `Upload ${type} image`);
+    const handleImageUpload = async (type) => {
+        try {
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (permissionResult.granted === false) {
+                alert('Permission to access camera roll is required!');
+                return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [12, 3],  // Adjust as needed
+                allowsEditing:true,
+                quality: 1,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const selectedImage = result.assets[0];
+                setImages(prev => ({ ...prev, [type]: selectedImage }));
+            }
+        } catch (error) {
+            console.error('Error selecting image: ', error);
+            alert('An error occurred while selecting the image');
+        }
     };
+
+
 
     const handleSubmit = async () => {
         try {
             setLoading(true);
             const formDataToSend = new FormData();
-            
+
             // Append text data
             formDataToSend.append('name', formData.name);
             formDataToSend.append('email', formData.email);
@@ -116,6 +192,8 @@ export function ProfileUpdate() {
                     formDataToSend.append(key, images[key]);
                 }
             });
+
+            const res = await axios.put(`http://192.168.1.8:8111/api/tiffin/vendor/${vendorId}`, formDataToSend)
 
             // Make API call here
             Alert.alert('Success', 'Profile updated successfully');
@@ -155,17 +233,17 @@ export function ProfileUpdate() {
                 />
             </View>
             {key === 'address.street_address' && addressSuggestions.length > 0 && (
-                <View style={styles.suggestionsContainer}>
+                <View style={[styles.suggestionsContainer, { maxHeight: 200 }]}>
                     <FlatList
                         data={addressSuggestions}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
                             <TouchableOpacity
                                 style={styles.suggestionItem}
-                                onPress={() => fetchGeocode(item)}
+                                onPress={() => fetchGeocode(item.description)} // Use the description or a valid string
                             >
                                 <Icon name="map-marker" size={16} color="#6366f1" />
-                                <Text style={styles.suggestionText}>{item}</Text>
+                                <Text style={styles.suggestionText}>{item.description}</Text> {/* Render the description */}
                             </TouchableOpacity>
                         )}
                     />
@@ -177,8 +255,8 @@ export function ProfileUpdate() {
     const renderImageUpload = (label, type) => (
         <View style={styles.imageUploadContainer}>
             <Text style={styles.imageLabel}>{label}</Text>
-            <TouchableOpacity 
-                style={styles.imageUploadButton} 
+            <TouchableOpacity
+                style={styles.imageUploadButton}
                 onPress={() => handleImageUpload(type)}
             >
                 <Icon name="camera-plus" size={24} color="#6366f1" />
@@ -188,11 +266,11 @@ export function ProfileUpdate() {
             </TouchableOpacity>
             {images[type] && (
                 <View style={styles.imagePreviewContainer}>
-                    <Image 
-                        source={{ uri: images[type].uri }} 
-                        style={styles.imagePreview} 
+                    <Image
+                        source={{ uri: images[type].uri }}
+                        style={styles.imagePreview}
                     />
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.removeImageButton}
                         onPress={() => setImages(prev => ({ ...prev, [type]: null }))}
                     >
@@ -233,8 +311,8 @@ export function ProfileUpdate() {
                     {renderImageUpload('PAN Card', 'PanImage')}
                 </View>
 
-                <TouchableOpacity 
-                    style={[styles.submitButton, loading && styles.submitButtonDisabled]} 
+                <TouchableOpacity
+                    style={[styles.submitButton, loading && styles.submitButtonDisabled]}
                     onPress={handleSubmit}
                     disabled={loading}
                 >

@@ -1,14 +1,45 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS } from '../../../constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from "@react-navigation/native";
 
 const Header = () => {
     const navigation = useNavigation();
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const slideAnim = useRef(new Animated.Value(-300)).current;
     const [activeOrder, setActiveOrder] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    const handleLogout = () => {
+        AsyncStorage.removeItem('userToken')
+        navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: "Home" }],
+            })
+          );
+    }
+
+    // Check for token in AsyncStorage
+    useEffect(() => {
+        const checkToken = async () => {
+            try {
+                const token = await AsyncStorage.getItem('userToken');
+                if (token) {
+                    setIsLoggedIn(true);
+                } else {
+                    setIsLoggedIn(false);
+                }
+            } catch (error) {
+                console.error('Error checking token:', error);
+            }
+        };
+
+        checkToken();
+    }, []);
 
     const showSidebar = () => {
         setSidebarVisible(true);
@@ -54,10 +85,10 @@ const Header = () => {
                         onPress={() => navigation.navigate('New Order')}
                         style={styles.notificationButton}
                     >
-                        <Icon 
-                            name={activeOrder ? "bell-badge" : "bell"} 
-                            size={24} 
-                            color="#ffffff" 
+                        <Icon
+                            name={activeOrder ? "bell-badge" : "bell"}
+                            size={24}
+                            color="#ffffff"
                         />
                     </TouchableOpacity>
 
@@ -97,12 +128,33 @@ const Header = () => {
                         </View>
 
                         <View style={styles.authButtons}>
-                            <TouchableOpacity onPress={()=>navigation.navigate('Login')} style={styles.loginButton}>
-                                <Text style={styles.loginButtonText}>Login</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.registerButton}>
-                                <Text style={styles.registerButtonText}>Register</Text>
-                            </TouchableOpacity>
+                            {isLoggedIn ? (
+                                <>
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('Profile')}
+                                        style={styles.loginButton}
+                                    >
+                                        <Text style={styles.loginButtonText}>Profile</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity onPress={handleLogout} style={styles.registerButton}>
+                                        <Text style={styles.registerButtonText}>Log Out</Text>
+                                    </TouchableOpacity>
+
+                                </>
+                            ) : (
+                                <>
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('Login')}
+                                        style={styles.loginButton}
+                                    >
+                                        <Text style={styles.loginButtonText}>Login</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.registerButton}>
+                                        <Text style={styles.registerButtonText}>Register</Text>
+                                    </TouchableOpacity>
+                                </>
+                            )}
                         </View>
 
                         <View style={styles.menuItems}>
