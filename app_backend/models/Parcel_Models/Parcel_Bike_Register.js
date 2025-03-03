@@ -108,10 +108,15 @@ const ParcelBikeRegisterSchema = new Schema({
     is_on_order:{
         type:Boolean,
         default:false
+    },
+    DocumentVerify: {
+        type: Boolean,
+        default: false
+    },
+    isBlockByAdmin: {
+        type: Boolean,
+        default: false
     }
-
-
-
 }, { timestamps: true });
 
 module.exports = mongoose.model('ParcelBikeRegister', ParcelBikeRegisterSchema);

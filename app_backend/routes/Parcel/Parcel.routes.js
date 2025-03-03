@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const Protect = require('../../middleware/Auth');
-const { register_parcel_partner, login, verifyOtp, resendOtp, details, partner_work_status, manage_offline_online, uploadDocuments } = require('../../Parcel Controller/Register_Partner');
+const { register_parcel_partner, login, verifyOtp, resendOtp, details, partner_work_status, manage_offline_online, uploadDocuments, getAllParcelUser, updateParcelIsBlockStatus, ParcelDocumentVerify, getSingleParcelUser, updateParcelDetail } = require('../../Parcel Controller/Register_Partner');
 const { request_of_parcel, my_parcel, single_my_parcel, my_parcel_driver, single_my_parcels } = require('../../Parcel Controller/Order.Parcel');
 
 const parcel = express.Router();
@@ -32,6 +32,12 @@ parcel.post('/manage_offline_online', Protect, manage_offline_online)
 parcel.get('/partner_work_status_details', Protect, partner_work_status)
 
 parcel.post('/request_of_parcel', Protect, request_of_parcel)
+
+parcel.get('/get_all_parcel_user',getAllParcelUser)
+parcel.put('/update_parcel_is_block_status/:id', updateParcelIsBlockStatus)
+parcel.put('/update_parcel_document_verify/:id', ParcelDocumentVerify)
+parcel.get('/get_single_parcel/:id',getSingleParcelUser)
+parcel.put('/update_parcel_data/:id', upload.any(),updateParcelDetail)
 
 
 

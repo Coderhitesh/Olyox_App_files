@@ -401,3 +401,56 @@ exports.findAllOrders = async (req, res) => {
         });
     }
 };
+
+
+exports.getAllUser = async (req, res) => {
+    try {
+        const allUser = await User.find()
+        if (!allUser) {
+            return res.status(400).json({
+                success: false,
+                message: "Internal server error",
+                error: error.message
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: "All user fetched successfully",
+            data: allUser
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        })
+    }
+}
+
+exports.updateBlockUser = async(req,res) => {
+    try {
+        const {id} = req.params;
+        const user = await User.findById(id)
+        const {isBlock} = req.body;
+        if(!user){
+            return res.staus(400).json({
+                success: false,
+                message: 'User not founded'
+            })
+        }
+        user.isBlock = isBlock;
+        await user.save()
+        return res.status(200).json({
+            success: true,
+            message: 'Status updated',
+        })
+    } catch (error) {
+        console.log("Internal server error",error)
+        res.status(500).json({
+            success: false,
+            message: 'Internal servere error',
+            error: error.message
+        })
+    }
+}
