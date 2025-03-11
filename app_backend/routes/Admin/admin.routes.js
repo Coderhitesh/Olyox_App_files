@@ -50,6 +50,7 @@ const {
     update_homeslide_slide,
     delete_homeslide_slide
 } = require('../../Admin Controllers/OnboardFnc/HomeScreenSlide');
+const { createCoupon, getAllCoupons, getCouponById, updateCoupon, deleteCoupon, updateIsActiveStatus } = require('../../Admin Controllers/Coupon.Controller');
 
 const admin = express.Router();
 
@@ -100,5 +101,14 @@ admin.get('/get_home_slides', get_home_slides);
 admin.get('/get_single_home_slides/:id', get_Home_slide_by_id);
 admin.put('/update_home_slide/:id', upload.single('image'), update_homeslide_slide);
 admin.delete('/delete_home_slide/:id', delete_homeslide_slide);
+
+// Coupon routes here 
+
+admin.post('/createCoupon', createCoupon);
+admin.get('/all_getCoupon', getAllCoupons);
+admin.get('/getSingleCoupon/:id', getCouponById);
+admin.put('/updateCoupon/:id', updateCoupon);
+admin.delete('/deleteCoupon/:id', deleteCoupon);
+admin.put('/updateCouponStatus/:id', updateIsActiveStatus);
 
 module.exports = admin;
